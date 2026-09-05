@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Historial de donaciones{% endblock %}
+{% block content %}
+<h1>Historial de donaciones</h1>
+<p>Total de publicaciones entregadas: <strong>{{ total_entregadas }}</strong></p>
+<table class="tabla">
+  <thead><tr><th>Titulo</th><th>Cantidad</th><th>Estado</th><th>Publicado</th></tr></thead>
+  <tbody>
+    {% for p in publicaciones %}
+    <tr>
+      <td>{{ p.titulo }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td><span class="estado estado-{{ p.estado }}">{{ p.estado }}</span></td>
+      <td>{{ p.creado_en.strftime('%d/%m/%Y %H:%M') }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Todavia no hay historial.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

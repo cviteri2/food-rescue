@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Ingresar - FoodRescue Guayaquil{% endblock %}
+{% block content %}
+<h1>Ingresar</h1>
+<form method="post" class="form-card">
+  <label>Email<input type="email" name="email" required></label>
+  <label>Contrasena<input type="password" name="password" required></label>
+  <button type="submit">Ingresar</button>
+</form>
+<p>No tienes cuenta?
+  <a href="{{ url_for('auth.registro_comercio') }}">Registra tu comercio</a> o
+  <a href="{{ url_for('auth.registro_organizacion') }}">registra tu organizacion</a>.
+</p>
+{% endblock %}

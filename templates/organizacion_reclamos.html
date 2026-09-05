@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Mis reclamos{% endblock %}
+{% block content %}
+<h1>Mis reclamos</h1>
+<table class="tabla">
+  <thead><tr><th>Publicacion</th><th>Comercio</th><th>Reclamado</th><th>Entregado</th></tr></thead>
+  <tbody>
+    {% for r in reclamos %}
+    <tr>
+      <td>{{ r.publicacion.titulo }}</td>
+      <td>{{ r.publicacion.comercio.nombre }}</td>
+      <td>{{ r.reclamado_en.strftime('%d/%m/%Y %H:%M') }}</td>
+      <td>{{ r.entregado_en.strftime('%d/%m/%Y %H:%M') if r.entregado_en else 'Pendiente de recojo' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Todavia no has reclamado ninguna publicacion.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

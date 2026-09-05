@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Panel de administracion{% endblock %}
+{% block content %}
+<h1>Panel de administracion</h1>
+
+<section class="metricas">
+  <div class="metrica"><span class="valor">{{ metricas.publicaciones_activas }}</span><span class="etiqueta">Publicaciones activas</span></div>
+  <div class="metrica"><span class="valor">{{ metricas.total_entregadas }}</span><span class="etiqueta">Publicaciones entregadas</span></div>
+  <div class="metrica"><span class="valor">{{ metricas.comercios_activos_30d }}</span><span class="etiqueta">Comercios activos (30 dias)</span></div>
+  <div class="metrica"><span class="valor">{{ metricas.comercios_registrados }}</span><span class="etiqueta">Comercios registrados</span></div>
+  <div class="metrica"><span class="valor">{{ metricas.organizaciones_registradas }}</span><span class="etiqueta">Organizaciones registradas</span></div>
+</section>
+
+<h2>Usuarios</h2>
+<table class="tabla">
+  <thead><tr><th>Nombre</th><th>Tipo</th><th>Email</th><th>Estado</th><th>Accion</th></tr></thead>
+  <tbody>
+    {% for u in usuarios %}
+    <tr>
+      <td>{{ u.nombre }}</td>
+      <td>{{ u.tipo }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ 'activo' if u.activo else 'pendiente/suspendido' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.toggle_usuario', usuario_id=u.id) }}">
+          <button type="submit">{{ 'Suspender' if u.activo else 'Aprobar' }}</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Todavia no hay usuarios registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Mis publicaciones{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+{% endblock %}
+{% block content %}
+<h1>Nueva publicacion</h1>
+<form id="form-publicacion" class="form-card">
+  <label>Titulo<input type="text" name="titulo" required></label>
+  <label>Descripcion<textarea name="descripcion"></textarea></label>
+  <label>Cantidad estimada<input type="text" name="cantidad" placeholder="10 porciones, 5kg de pan..."></label>
+  <label>Hora limite de recojo<input type="datetime-local" name="expira_en" required></label>
+  <label>Foto (opcional, se comprime automaticamente antes de subir)<input type="file" name="foto" id="input-foto" accept="image/*"></label>
+
+  <p>Marca el punto de recojo en el mapa:</p>
+  <div id="mapa-publicacion" style="height: 320px;"></div>
+  <input type="hidden" name="lat" id="lat" required>
+  <input type="hidden" name="lng" id="lng" required>
+
+  <button type="submit">Publicar excedente</button>
+  <p id="mensaje-publicacion" class="mensaje" hidden></p>
+</form>
+
+<h2>Mis publicaciones</h2>
+<table class="tabla">
+  <thead>
+    <tr><th>Titulo</th><th>Cantidad</th><th>Estado</th><th>Expira</th><th>Accion</th></tr>
+  </thead>
+  <tbody>
+    {% for p in publicaciones %}
+    <tr>
+      <td>{{ p.titulo }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td><span class="estado estado-{{ p.estado }}">{{ p.estado }}</span></td>
+      <td>{{ p.expira_en.strftime('%d/%m/%Y %H:%M') }}</td>
+      <td>
+        {% if p.estado == 'reclamado' %}
+        <button class="btn-entregar" data-id="{{ p.id }}">Marcar entregada</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Todavia no has publicado ningun excedente.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="{{ url_for('static', filename='js/mapa_registro.js') }}"></script>
+<script>
+  initMapaSeleccion('mapa-publicacion', 'lat', 'lng', -2.170998, -79.922359);
+</script>
+<script src="{{ url_for('static', filename='js/mapa_comercio.js') }}"></script>
+{% endblock %}
