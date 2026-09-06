@@ -30,7 +30,7 @@ en el **plan gratuito (Beginner) de PythonAnywhere**.
 ```
 food-rescue/
   app.py              # application factory + registro de blueprints
-  config.py           # configuracion (SQLite local / MySQL produccion)
+  config.py           # configuracion (SQLite por defecto; MySQL opcional via env vars)
   models.py           # Usuario, Publicacion, Reclamo, Notificacion
   utils.py            # Haversine + sincronizacion perezosa de estado
   wsgi.py              # punto de entrada para PythonAnywhere
@@ -90,28 +90,52 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Crear la base de datos MySQL
+### 2. Base de datos: SQLite en producción (ruta por defecto, sin MySQL)
+
+`config.py` solo arma una URI de MySQL cuando encuentra `MYSQL_HOST` (o
+`DATABASE_URL`) como variable de entorno. Si no defines ninguna de las dos,
+la app usa SQLite en producción exactamente igual que en local — no hay que
+tocar código ni crear nada en la pestaña **Databases**. El archivo vive en
+`instance/foodrescue.db`, dentro de tu propio directorio del proyecto, y
+cuenta contra la cuota de 512MB de disco (igual que si fuera MySQL).
+
+Es una opción perfectamente válida para la escala de un taller: el free
+tier corre con un solo worker web, así que no hay riesgo de que dos
+procesos escriban el archivo SQLite al mismo tiempo. Si el proyecto crece a
+uso real con más tráfico concurrente, migrar a MySQL más adelante es
+agregar las variables del recuadro de abajo — el código no cambia.
+
+<details>
+<summary>Opcional: usar MySQL en vez de SQLite</summary>
 
 En el dashboard: pestaña **Databases** → define una contraseña para MySQL →
 crea una base con el nombre que te sugiere PythonAnywhere (normalmente
 `tuusuario$foodrescue`). Anota el host que te muestra la misma página
-(normalmente `tuusuario.mysql.pythonanywhere-services.com`).
-
-### 3. Variables de entorno
-
-Pestaña **Web** → tu app → sección **Environment variables**, agrega:
+(normalmente `tuusuario.mysql.pythonanywhere-services.com`). Luego agrega
+estas variables de entorno en el paso 3, además de `SECRET_KEY`:
 
 | Variable | Valor |
 |---|---|
-| `SECRET_KEY` | una cadena aleatoria larga (no la del repo) |
 | `MYSQL_HOST` | `tuusuario.mysql.pythonanywhere-services.com` |
 | `MYSQL_USER` | `tuusuario` |
-| `MYSQL_PASSWORD` | la que definiste en el paso 2 |
+| `MYSQL_PASSWORD` | la contraseña que definiste arriba |
 | `MYSQL_DB` | `tuusuario$foodrescue` |
 
-Si tu cuenta no muestra esa sección, exporta las mismas variables al inicio
-de `wsgi.py` con `os.environ["..."] = "..."` (menos prolijo, pero funciona
-igual en el free tier).
+</details>
+
+### 3. Variables de entorno
+
+Pestaña **Web** → tu app → sección **Environment variables**, agrega al
+menos:
+
+| Variable | Valor |
+|---|---|
+| `SECRET_KEY` | una cadena aleatoria larga (no la del repo); genérala con `python3 -c "import secrets; print(secrets.token_hex(32))"` |
+
+Si vas a usar MySQL (paso 2, opcional), agrega también las cuatro variables
+`MYSQL_*` de ese recuadro. Si tu cuenta no muestra esta sección, exporta las
+mismas variables al inicio de `wsgi.py` con `os.environ["..."] = "..."`
+(menos prolijo, pero funciona igual en el free tier).
 
 ### 4. Crear la app web
 
