@@ -1,11 +1,17 @@
 # FoodRescue Guayaquil
 
 MVP web que conecta comercios con excedentes de alimentos (restaurantes,
-panaderías, supermercados) con organizaciones benéficas y comedores
-comunitarios, para redistribuir alimentos antes de que se desperdicien.
-Inspirado en el modelo de [Too Good To Go](https://www.toogoodtogo.com/es),
-adaptado a un esquema benéfico (sin pagos) y diseñado desde cero para correr
-en el **plan gratuito (Beginner) de PythonAnywhere**.
+panaderías, supermercados) con organizaciones benéficas, comedores
+comunitarios y personas individuales, para redistribuir alimentos antes de
+que se desperdicien. Inspirado en el modelo de
+[Too Good To Go](https://www.toogoodtogo.com/es), adaptado a un esquema
+benéfico (sin pagos) y diseñado desde cero para correr en el **plan
+gratuito (Beginner) de PythonAnywhere**.
+
+Hay tres roles: **comercio** (dona excedentes), **organización** o
+**persona** (ambos son "beneficiarios": ven el mapa de publicaciones
+cercanas y reclaman) y **admin** (aprueba comercios/organizaciones y ve
+métricas).
 
 ## Restricciones de diseño (por qué el código es como es)
 
@@ -38,7 +44,7 @@ food-rescue/
   routes/
     auth.py            # login, logout, registro
     comercios.py        # dashboard e historial del comercio
-    organizaciones.py   # dashboard y reclamos de la organizacion
+    beneficiarios.py    # dashboard y reclamos (organizacion o persona)
     admin.py            # panel de administracion
     api.py              # endpoints JSON (polling, crear/reclamar/entregar)
   templates/
@@ -71,10 +77,14 @@ Abre `http://127.0.0.1:5000`. Credenciales de prueba creadas por `seed.py`:
 | Admin | `admin@foodrescue.gy` | `admin123` |
 | Comercio | `panaderia@demo.com` / `restaurante@demo.com` / `supermercado@demo.com` | `demo123` |
 | Organización | `comedor@demo.com` / `fundacion@demo.com` / `albergue@demo.com` | `demo123` |
+| Persona | `persona1@demo.com` / `persona2@demo.com` | `demo123` |
 
-Los usuarios de `seed.py` ya quedan `activo=True`; los registros nuevos por
+Los usuarios de `seed.py` ya quedan `activo=True`. Los registros nuevos por
 `/auth/registro/comercio` o `/auth/registro/organizacion` quedan pendientes
-de aprobación en el panel de admin.
+de aprobación en el panel de admin (representan una institución que hay que
+verificar). `/auth/registro/persona` en cambio se activa de inmediato, sin
+aprobación manual: es el consumidor final individual, igual que en Too Good
+To Go no hay verificación institucional para quien solo va a recoger comida.
 
 ## Despliegue en PythonAnywhere (plan free "Beginner")
 

@@ -96,7 +96,31 @@ with app.app_context():
     )
     org3.set_password("demo123")
 
-    db.session.add_all([admin, comercio1, comercio2, comercio3, org1, org2, org3])
+    persona1 = Usuario(
+        tipo="persona",
+        email="persona1@demo.com",
+        nombre="Maria Fernanda Solis",
+        direccion="Urdesa, Guayaquil",
+        lat=-2.161000,
+        lng=-79.899000,
+        activo=True,
+    )
+    persona1.set_password("demo123")
+
+    persona2 = Usuario(
+        tipo="persona",
+        email="persona2@demo.com",
+        nombre="Jorge Andrade",
+        direccion="Alborada, Guayaquil",
+        lat=-2.140000,
+        lng=-79.903000,
+        activo=True,
+    )
+    persona2.set_password("demo123")
+
+    db.session.add_all(
+        [admin, comercio1, comercio2, comercio3, org1, org2, org3, persona1, persona2]
+    )
     db.session.commit()
 
     ahora = datetime.utcnow()
@@ -159,15 +183,17 @@ with app.app_context():
 
     reclamo_entregado = Reclamo(
         publicacion_id=publicaciones[4].id,
-        organizacion_id=org1.id,
+        beneficiario_id=org1.id,
         reclamado_en=ahora - timedelta(hours=1),
         entregado_en=ahora - timedelta(minutes=30),
     )
     publicaciones[4].estado = "entregado"
 
+    # Este lo reclama una persona individual, no una organizacion, para
+    # demostrar que ambos tipos de beneficiario comparten el mismo flujo.
     reclamo_activo = Reclamo(
         publicacion_id=publicaciones[2].id,
-        organizacion_id=org2.id,
+        beneficiario_id=persona1.id,
         reclamado_en=ahora - timedelta(minutes=10),
     )
     publicaciones[2].estado = "reclamado"
@@ -175,10 +201,10 @@ with app.app_context():
     db.session.add_all([reclamo_entregado, reclamo_activo])
     db.session.commit()
 
-    for org in (org1, org2, org3):
+    for beneficiario in (org1, org2, org3, persona1, persona2):
         db.session.add(
             Notificacion(
-                usuario_id=org.id,
+                usuario_id=beneficiario.id,
                 mensaje="Nueva publicacion cerca de ti: Pan del dia sin vender",
                 publicacion_id=publicaciones[0].id,
             )
@@ -189,3 +215,4 @@ with app.app_context():
     print("Admin:          admin@foodrescue.gy / admin123")
     print("Comercios:      panaderia@demo.com, restaurante@demo.com, supermercado@demo.com (clave: demo123)")
     print("Organizaciones: comedor@demo.com, fundacion@demo.com, albergue@demo.com (clave: demo123)")
+    print("Personas:       persona1@demo.com, persona2@demo.com (clave: demo123)")

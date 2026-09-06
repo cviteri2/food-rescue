@@ -18,8 +18,8 @@ endpoints (rutas, payloads, respuestas) no cambia.
 | Método | Ruta | Rol requerido | Descripción |
 |---|---|---|---|
 | `POST` | `/api/publicaciones` | comercio | Crea una publicación. Recibe `multipart/form-data` (titulo, descripcion, cantidad, lat, lng, expira_en, foto opcional). Devuelve la publicación creada en JSON. |
-| `GET` | `/api/publicaciones-cercanas` | organizacion | Devuelve publicaciones disponibles cerca de una ubicación (`lat`, `lng`, `radio_km` opcionales en query string; por defecto usa la ubicación registrada de la organización), ordenadas por distancia (Haversine). |
-| `POST` | `/api/publicaciones/<id>/reclamar` | organizacion | Reclama una publicación de forma atómica (evita condiciones de carrera entre dos organizaciones). |
+| `GET` | `/api/publicaciones-cercanas` | organizacion o persona | Devuelve publicaciones disponibles cerca de una ubicación (`lat`, `lng`, `radio_km` opcionales en query string; por defecto usa la ubicación registrada del beneficiario), ordenadas por distancia (Haversine). |
+| `POST` | `/api/publicaciones/<id>/reclamar` | organizacion o persona | Reclama una publicación de forma atómica (evita condiciones de carrera entre dos beneficiarios, sean organizaciones o personas). |
 | `POST` | `/api/publicaciones/<id>/entregar` | comercio (dueño) | Marca una publicación reclamada como entregada. |
 | `GET` | `/api/notificaciones` | cualquier usuario autenticado | Notificaciones no leídas del usuario actual. Pensado para polling cada 15-20s; en una app móvil esto se reemplaza directamente por push nativo (FCM/APNs) sin tocar el resto del modelo de datos. |
 | `POST` | `/api/notificaciones/<id>/leer` | cualquier usuario autenticado | Marca una notificación como leída. |
@@ -32,9 +32,9 @@ un error del cliente.
 
 ## Endpoints que siguen siendo server-rendered (no diseñados para consumo JSON)
 
-- `GET/POST /auth/login`, `/auth/registro/comercio`, `/auth/registro/organizacion`
+- `GET/POST /auth/login`, `/auth/registro/comercio`, `/auth/registro/organizacion`, `/auth/registro/persona`
 - `GET /comercio/dashboard`, `/comercio/historial`
-- `GET /organizacion/dashboard`, `/organizacion/reclamos`
+- `GET /beneficiario/dashboard`, `/beneficiario/reclamos` (sirve tanto a organizacion como a persona)
 - `GET /admin/dashboard`, `POST /admin/usuarios/<id>/toggle`
 
 Si la app móvil también necesita registro/login, lo más simple es agregar un

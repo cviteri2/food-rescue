@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const mapa = L.map('mapa-organizacion').setView([ORG_LAT, ORG_LNG], 13);
+  const mapa = L.map('mapa-beneficiario').setView([BENEFICIARIO_LAT, BENEFICIARIO_LNG], 13);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 19,
   }).addTo(mapa);
 
-  L.marker([ORG_LAT, ORG_LNG]).addTo(mapa).bindPopup('Tu organizacion').openPopup();
+  L.marker([BENEFICIARIO_LAT, BENEFICIARIO_LNG]).addTo(mapa).bindPopup('Tu ubicacion').openPopup();
 
   let marcadores = [];
 

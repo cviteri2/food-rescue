@@ -5,14 +5,14 @@
 {% endblock %}
 {% block content %}
 <h1>Publicaciones disponibles cerca de ti</h1>
-<div id="mapa-organizacion" style="height: 420px;"></div>
+<div id="mapa-beneficiario" style="height: 420px;"></div>
 <ul id="lista-publicaciones" class="lista-publicaciones"></ul>
 {% endblock %}
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-  const ORG_LAT = {{ current_user.lat }};
-  const ORG_LNG = {{ current_user.lng }};
+  const BENEFICIARIO_LAT = {{ current_user.lat }};
+  const BENEFICIARIO_LNG = {{ current_user.lng }};
 </script>
-<script src="{{ url_for('static', filename='js/mapa_organizacion.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mapa_beneficiario.js') }}"></script>
 {% endblock %}

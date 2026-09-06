@@ -11,7 +11,7 @@ class Usuario(UserMixin, db.Model):
     __tablename__ = "usuarios"
 
     id = db.Column(db.Integer, primary_key=True)
-    tipo = db.Column(db.String(20), nullable=False)  # comercio | organizacion | admin
+    tipo = db.Column(db.String(20), nullable=False)  # comercio | organizacion | persona | admin
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     nombre = db.Column(db.String(150), nullable=False)
@@ -32,8 +32,10 @@ class Usuario(UserMixin, db.Model):
     publicaciones = db.relationship(
         "Publicacion", backref="comercio", lazy="dynamic", foreign_keys="Publicacion.comercio_id"
     )
+    # "beneficiario": una organizacion (comedor, fundacion) o una persona individual.
+    # Ambos tipos reclaman publicaciones de la misma forma, ver routes/beneficiarios.py
     reclamos = db.relationship(
-        "Reclamo", backref="organizacion", lazy="dynamic", foreign_keys="Reclamo.organizacion_id"
+        "Reclamo", backref="beneficiario", lazy="dynamic", foreign_keys="Reclamo.beneficiario_id"
     )
 
     @property
@@ -87,7 +89,7 @@ class Reclamo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     publicacion_id = db.Column(db.Integer, db.ForeignKey("publicaciones.id"), nullable=False)
-    organizacion_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    beneficiario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
     reclamado_en = db.Column(db.DateTime, default=datetime.utcnow)
     entregado_en = db.Column(db.DateTime)
 

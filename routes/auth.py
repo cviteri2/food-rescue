@@ -95,6 +95,36 @@ def registro_organizacion():
     return render_template("registro_organizacion.html")
 
 
+@auth_bp.route("/registro/persona", methods=["GET", "POST"])
+def registro_persona():
+    if request.method == "POST":
+        error = _validar_registro_comun()
+        if error:
+            flash(error, "error")
+            return render_template("registro_persona.html")
+
+        usuario = Usuario(
+            tipo="persona",
+            email=request.form["email"].strip().lower(),
+            nombre=request.form["nombre"].strip(),
+            direccion=request.form.get("direccion", "").strip(),
+            lat=float(request.form["lat"]),
+            lng=float(request.form["lng"]),
+            # A diferencia de comercio/organizacion, una persona individual no
+            # representa una institucion que haya que verificar: se activa de
+            # una vez, igual que en Too Good To Go no hay aprobacion manual
+            # para el consumidor final.
+            activo=True,
+        )
+        usuario.set_password(request.form["password"])
+        db.session.add(usuario)
+        db.session.commit()
+        flash("Cuenta creada. Ya puedes ingresar.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("registro_persona.html")
+
+
 def _validar_registro_comun():
     email = request.form.get("email", "").strip().lower()
     password = request.form.get("password", "")

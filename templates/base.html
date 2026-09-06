@@ -15,9 +15,9 @@
         {% if current_user.tipo == 'comercio' %}
           <a href="{{ url_for('comercios.dashboard') }}">Mis publicaciones</a>
           <a href="{{ url_for('comercios.historial') }}">Historial</a>
-        {% elif current_user.tipo == 'organizacion' %}
-          <a href="{{ url_for('organizaciones.dashboard') }}">Mapa</a>
-          <a href="{{ url_for('organizaciones.reclamos') }}">Mis reclamos</a>
+        {% elif current_user.tipo in ('organizacion', 'persona') %}
+          <a href="{{ url_for('beneficiarios.dashboard') }}">Mapa</a>
+          <a href="{{ url_for('beneficiarios.reclamos') }}">Mis reclamos</a>
           <span id="notif-badge" class="badge" hidden>0</span>
         {% elif current_user.tipo == 'admin' %}
           <a href="{{ url_for('admin.dashboard') }}">Panel admin</a>
@@ -43,7 +43,7 @@
   </main>
 
   <script src="{{ url_for('static', filename='js/common.js') }}"></script>
-  {% if current_user.is_authenticated and current_user.tipo == 'organizacion' %}
+  {% if current_user.is_authenticated and current_user.tipo in ('organizacion', 'persona') %}
     <script src="{{ url_for('static', filename='js/notificaciones.js') }}"></script>
   {% endif %}
   {% block extra_js %}{% endblock %}

@@ -16,15 +16,17 @@ def _archivo_permitido(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
 
 
-def _notificar_organizaciones_cercanas(publicacion):
+def _notificar_beneficiarios_cercanos(publicacion):
     radio = current_app.config["RADIO_NOTIFICACION_KM"]
-    organizaciones = Usuario.query.filter_by(tipo="organizacion", activo=True).all()
-    for org in organizaciones:
-        distancia = haversine_km(org.lat, org.lng, publicacion.lat, publicacion.lng)
+    beneficiarios = Usuario.query.filter(
+        Usuario.tipo.in_(["organizacion", "persona"]), Usuario.activo.is_(True)
+    ).all()
+    for beneficiario in beneficiarios:
+        distancia = haversine_km(beneficiario.lat, beneficiario.lng, publicacion.lat, publicacion.lng)
         if distancia is not None and distancia <= radio:
             db.session.add(
                 Notificacion(
-                    usuario_id=org.id,
+                    usuario_id=beneficiario.id,
                     mensaje=f"Nueva publicacion cerca de ti: {publicacion.titulo}",
                     publicacion_id=publicacion.id,
                 )
@@ -78,7 +80,7 @@ def crear_publicacion():
     db.session.add(publicacion)
     db.session.commit()
 
-    _notificar_organizaciones_cercanas(publicacion)
+    _notificar_beneficiarios_cercanos(publicacion)
 
     return jsonify(publicacion.to_dict()), 201
 
@@ -86,8 +88,8 @@ def crear_publicacion():
 @api_bp.route("/publicaciones-cercanas")
 @login_required
 def publicaciones_cercanas():
-    if current_user.tipo != "organizacion":
-        return jsonify({"error": "Solo una organizacion puede ver publicaciones cercanas."}), 403
+    if current_user.tipo not in ("organizacion", "persona"):
+        return jsonify({"error": "Solo una organizacion o persona puede ver publicaciones cercanas."}), 403
 
     lat = request.args.get("lat", type=float) or current_user.lat
     lng = request.args.get("lng", type=float) or current_user.lng
@@ -115,8 +117,8 @@ def publicaciones_cercanas():
 @api_bp.route("/publicaciones/<int:publicacion_id>/reclamar", methods=["POST"])
 @login_required
 def reclamar_publicacion(publicacion_id):
-    if current_user.tipo != "organizacion":
-        return jsonify({"error": "Solo una organizacion puede reclamar publicaciones."}), 403
+    if current_user.tipo not in ("organizacion", "persona"):
+        return jsonify({"error": "Solo una organizacion o persona puede reclamar publicaciones."}), 403
 
     publicacion = db.session.get(Publicacion, publicacion_id)
     if publicacion is None:
@@ -137,7 +139,7 @@ def reclamar_publicacion(publicacion_id):
     if resultado.rowcount == 0:
         return jsonify({"error": "Esta publicacion ya no esta disponible."}), 409
 
-    reclamo = Reclamo(publicacion_id=publicacion_id, organizacion_id=current_user.id)
+    reclamo = Reclamo(publicacion_id=publicacion_id, beneficiario_id=current_user.id)
     db.session.add(reclamo)
     db.session.commit()
 

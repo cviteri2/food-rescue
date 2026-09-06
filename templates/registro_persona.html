@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Registro de persona{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+{% endblock %}
+{% block content %}
+<h1>Registro individual</h1>
+<p>Para movilizarte a recoger excedentes de alimentos cerca de ti.</p>
+<form method="post" class="form-card">
+  <label>Nombre completo<input type="text" name="nombre" required></label>
+  <label>Email<input type="email" name="email" required></label>
+  <label>Contrasena<input type="password" name="password" required minlength="6"></label>
+  <label>Direccion (opcional)<input type="text" name="direccion"></label>
+
+  <p>Marca tu ubicacion en el mapa (se usa para mostrarte publicaciones cercanas):</p>
+  <div id="mapa-registro" style="height: 320px;"></div>
+  <input type="hidden" name="lat" id="lat" required>
+  <input type="hidden" name="lng" id="lng" required>
+
+  <button type="submit">Registrarme</button>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="{{ url_for('static', filename='js/mapa_registro.js') }}"></script>
+<script>
+  initMapaSeleccion('mapa-registro', 'lat', 'lng', -2.170998, -79.922359);
+</script>
+{% endblock %}

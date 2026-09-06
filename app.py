@@ -23,12 +23,12 @@ def create_app(config_class=Config):
     from routes.admin import admin_bp
     from routes.api import api_bp
     from routes.auth import auth_bp
+    from routes.beneficiarios import beneficiarios_bp
     from routes.comercios import comercios_bp
-    from routes.organizaciones import organizaciones_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(comercios_bp)
-    app.register_blueprint(organizaciones_bp)
+    app.register_blueprint(beneficiarios_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
 
@@ -38,8 +38,8 @@ def create_app(config_class=Config):
             return redirect(url_for("auth.login"))
         if current_user.tipo == "comercio":
             return redirect(url_for("comercios.dashboard"))
-        if current_user.tipo == "organizacion":
-            return redirect(url_for("organizaciones.dashboard"))
+        if current_user.tipo in ("organizacion", "persona"):
+            return redirect(url_for("beneficiarios.dashboard"))
         if current_user.tipo == "admin":
             return redirect(url_for("admin.dashboard"))
         return redirect(url_for("auth.login"))

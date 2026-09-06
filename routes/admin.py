@@ -34,11 +34,12 @@ def dashboard():
             .count()
         ),
         "organizaciones_registradas": Usuario.query.filter_by(tipo="organizacion").count(),
+        "personas_registradas": Usuario.query.filter_by(tipo="persona").count(),
         "comercios_registrados": Usuario.query.filter_by(tipo="comercio").count(),
     }
 
     usuarios = (
-        Usuario.query.filter(Usuario.tipo.in_(["comercio", "organizacion"]))
+        Usuario.query.filter(Usuario.tipo.in_(["comercio", "organizacion", "persona"]))
         .order_by(Usuario.creado_en.desc())
         .all()
     )
